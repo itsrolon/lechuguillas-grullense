@@ -165,6 +165,7 @@ function enviarWhatsApp() {
     });
 
   });
+  
 </script>
 
   <body>
@@ -197,7 +198,7 @@ function enviarWhatsApp() {
   </div>
 
   <!-- HISTORIA -->
-  <div class="empresa-bloque">
+  <div class="empresa-bloque animar">
     <div class="empresa-icono">🌿</div>
     <div class="empresa-texto">
       <h3>Nuestra Historia</h3>
@@ -209,7 +210,7 @@ function enviarWhatsApp() {
   <div class="empresa-valores">
     <h3>Nuestros Valores</h3>
     <div class="valores-grid">
-      <div class="valor-tarjeta">
+      <div class="valor-tarjeta animar">
         <span>🤝</span>
         <h4>Confianza</h4>
         <p>Descripción breve del valor.</p>
@@ -263,14 +264,14 @@ function enviarWhatsApp() {
 
     <!-- PRODUCTOS DESTACADOS -->
 <section id="catalogo">
-  <div class="seccion-encabezado">
+  <div class="seccion-encabezado animar">
     <h2>Productos Estrella</h2>
     <p class="seccion-subtitulo">Lo mejor de Lechuguillas El Grullense</p>
   </div>
 
   <div class="productos-grid">
 
-    <div class="producto-tarjeta">
+    <div class="producto-tarjeta animar">
       <div class="producto-emoji">🌵</div>
       <div class="producto-sabor sabor-natural">Natural</div>
       <h3>Lechuguilla Natural</h3>
@@ -514,7 +515,18 @@ function enviarWhatsApp() {
   </div>
 
 </footer>
+<script>
+  // ---- ANIMACIONES AL SCROLL ----
+  const observador = new IntersectionObserver((entradas) => {
+    entradas.forEach(entrada => {
+      if (entrada.isIntersecting) {
+        entrada.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
 
+  document.querySelectorAll('.animar, .animar-izquierda, .animar-derecha')
+    .forEach(el => observador.observe(el));
+</script>
   </body>
-
 </html>
