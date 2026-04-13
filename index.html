@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<!-- Leaflet Maps -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lechuguillas El Grullense</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  
+<script>
+  // ---- FORMULARIO DE CONTACTO ----
+let tipoFormulario = '';
+
+function mostrarFormulario(tipo) {
+  tipoFormulario = tipo;
+  const titulos = {
+    pedido:     '📦 Hacer un Pedido',
+    cotizacion: '💰 Solicitar Cotización',
+    sugerencia: '💡 Enviar Sugerencia',
+    queja:      '😤 Registrar Queja',
+    comentario: '💬 Dejar un Comentario'
+  };
+  const placeholders = {
+    pedido:     '¿Qué productos deseas pedir y en qué cantidad?',
+    cotizacion: '¿Para cuántas personas o unidades necesitas cotización?',
+    sugerencia: '¿Qué podríamos mejorar?',
+    queja:      '¿Qué problema tuviste? Cuéntanos con detalle.',
+    comentario: '¿Qué te pareció nuestro producto o servicio?'
+  };
+
+  document.getElementById('formulario-titulo').textContent = titulos[tipo];
+  document.getElementById('campo-mensaje').placeholder = placeholders[tipo];
+  document.getElementById('formulario-contacto').style.display = 'block';
+  document.getElementById('formulario-contacto').scrollIntoView({ behavior: 'smooth' });
+}
+
+function cerrarFormulario() {
+  document.getElementById('formulario-contacto').style.display = 'none';
+}
+
+function enviarWhatsApp() {
+  const nombre   = document.getElementById('campo-nombre').value;
+  const telefono = document.getElementById('campo-telefono').value;
+  const mensaje  = document.getElementById('campo-mensaje').value;
+
+  if (!nombre || !mensaje) {
+    alert('Por favor llena tu nombre y mensaje.');
+    return;
+  }
+
+  const textoWA = `*Lechuguillas El Grullense*\n*Tipo:* ${tipoFormulario.toUpperCase()}\n*Nombre:* ${nombre}\n*Teléfono:* ${telefono}\n*Mensaje:* ${mensaje}`;
+  const url = `https://wa.me/5213123196416?text=${encodeURIComponent(textoWA)}`;
+  window.open(url, '_blank');
+}
+  window.addEventListener('load', function() {
+
+    const zonas = [
+      {
+        nombre: "Zona Centro",
+        dias: "Lunes y Miércoles",
+        horario: "9:00am - 12:00pm",
+        color: "#4A7C59",
+        lat: 19.1059,
+        lng: -104.3150,
+        radio: 1500
+      },
+      {
+        nombre: "Zona Norte",
+        dias: "Martes y Jueves",
+        horario: "10:00am - 1:00pm",
+        color: "#8B5E3C",
+        lat: 19.1300,
+        lng: -104.3000,
+        radio: 1200
+      },
+      {
+        nombre: "Zona Sur",
+        dias: "Viernes",
+        horario: "8:00am - 11:00am",
+        color: "#2D4A35",
+        lat: 19.0800,
+        lng: -104.3300,
+        radio: 1800
+      },
+      {
+        nombre: "Zona Oriente",
+        dias: "Sábado",
+        horario: "9:00am - 2:00pm",
+        color: "#D4A574",
+        lat: 19.0900,
+        lng: -104.2950,
+        radio: 1000
+      }
+    ];
+
+    // ---- MAPA CON ESTILO VOYAGER ----
+    const mapa = L.map('mapa').setView([19.1059, -104.3150], 12);
+
+   L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(mapa);
+
+    // ---- MARCADOR CENTRAL DEL NEGOCIO ----
+    const iconoNegocio = L.divIcon({
+      html: `<div style="
+        background-color: #2D4A35;
+        color: white;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        border: 3px solid #F5F0E8;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      ">🌵</div>`,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
+      className: ''
+    });
+
+    L.marker([19.1059, -104.3150], { icon: iconoNegocio })
+      .addTo(mapa)
+      .bindPopup(`
+        <div style="font-family: 'Lato', sans-serif; text-align:center;">
+          <strong style="color: #2D4A35; font-size: 16px;">🌵 Lechuguillas El Grullense</strong><br>
+          <small>Nuestra base de operaciones</small>
+        </div>
+      `);
+
+    // ---- ZONAS Y TABLA ----
+    const tbody = document.getElementById('tabla-rutas');
+
+    zonas.forEach(zona => {
+      const circulo = L.circle([zona.lat, zona.lng], {
+        color: zona.color,
+        fillColor: zona.color,
+        fillOpacity: 0.35,
+        radius: zona.radio,
+        weight: 2
+      }).addTo(mapa);
+
+      circulo.bindPopup(`
+        <div style="font-family: 'Lato', sans-serif; min-width: 160px;">
+          <strong style="color: #2D4A35; font-size: 15px;">${zona.nombre}</strong><br><br>
+          📅 <strong>Días:</strong> ${zona.dias}<br>
+          🕐 <strong>Horario:</strong> ${zona.horario}
+        </div>
+      `);
+
+      const fila = document.createElement('tr');
+      fila.innerHTML = `
+        <td>
+          <span class="tabla-color" style="background:${zona.color}"></span>
+          ${zona.nombre}
+        </td>
+        <td>${zona.dias}</td>
+        <td>${zona.horario}</td>
+      `;
+      tbody.appendChild(fila);
+    });
+
+  });
+</script>
+
+  <body>
+
+    <!-- NAVEGACIÓN -->
+    <nav>
+  <a href="index.html">Inicio</a>
+  <a href="index.html#empresa">Empresa</a>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="index.html#cobertura">Áreas de Cobertura</a>
+  <a href="index.html#contacto">Contáctanos</a>
+  <a href="blog.html">Blog</a>
+</nav>
+
+   <!-- INICIO -->
+<section id="inicio">
+  <div class="hero-contenido">
+    <p class="hero-etiqueta">🌿 Producto 100% Natural</p>
+    <h1>Lechuguillas El Grullense</h1>
+    <p class="hero-subtitulo">Sabor artesanal directo del corazón de México</p>
+    <a href="#catalogo" class="boton-principal">Ver Catálogo</a>
+  </div>
+</section>
+   
+<!-- EMPRESA -->
+<section id="empresa">
+  <div class="seccion-encabezado">
+    <h2>Nuestra Empresa</h2>
+    <p class="seccion-subtitulo">Tradición, sabor y compromiso desde el corazón de Jalisco</p>
+  </div>
+
+  <!-- HISTORIA -->
+  <div class="empresa-bloque">
+    <div class="empresa-icono">🌿</div>
+    <div class="empresa-texto">
+      <h3>Nuestra Historia</h3>
+      <p>Aquí va la historia del negocio. Cuándo inició, quién lo fundó, cómo creció.</p>
+    </div>
+  </div>
+
+  <!-- VALORES -->
+  <div class="empresa-valores">
+    <h3>Nuestros Valores</h3>
+    <div class="valores-grid">
+      <div class="valor-tarjeta">
+        <span>🤝</span>
+        <h4>Confianza</h4>
+        <p>Descripción breve del valor.</p>
+      </div>
+      <div class="valor-tarjeta">
+        <span>🌱</span>
+        <h4>Naturalidad</h4>
+        <p>Descripción breve del valor.</p>
+      </div>
+      <div class="valor-tarjeta">
+        <span>⭐</span>
+        <h4>Calidad</h4>
+        <p>Descripción breve del valor.</p>
+      </div>
+      <div class="valor-tarjeta">
+        <span>❤️</span>
+        <h4>Pasión</h4>
+        <p>Descripción breve del valor.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- IDENTIDAD -->
+  <div class="empresa-bloque">
+    <div class="empresa-icono">🏷️</div>
+    <div class="empresa-texto">
+      <h3>Nuestra Identidad</h3>
+      <p>Aquí va la misión, visión y lo que hace único al negocio.</p>
+    </div>
+  </div>
+
+  <!-- PRODUCCIÓN -->
+  <div class="empresa-bloque">
+    <div class="empresa-icono">⚙️</div>
+    <div class="empresa-texto">
+      <h3>Nuestro Proceso de Producción</h3>
+      <p>Aquí se describe cómo se elaboran los productos, qué hace el proceso especial y por qué genera confianza.</p>
+    </div>
+  </div>
+
+  <!-- INGREDIENTES -->
+  <div class="empresa-bloque">
+    <div class="empresa-icono">🧪</div>
+    <div class="empresa-texto">
+      <h3>Ingredientes y Detalles</h3>
+      <p>Aquí van los ingredientes principales, certificaciones o datos importantes que generen confianza en el cliente.</p>
+    </div>
+  </div>
+
+</section>
+
+    <!-- CATÁLOGO -->
+    <section id="catalogo">
+      <h2>Catálogo</h2>
+      <p>Todos nuestros productos van aquí.</p>
+    </section>
+
+    <!-- ÁREAS DE COBERTURA -->
+    <!-- ÁREAS DE COBERTURA -->
+<section id="cobertura">
+  <div class="seccion-encabezado">
+    <h2>Áreas de Cobertura</h2>
+    <p class="seccion-subtitulo">Conoce las zonas donde llegamos y los días de visita</p>
+  </div>
+
+  <!-- LEYENDA DE DÍAS -->
+  <div class="cobertura-leyenda">
+    <div class="leyenda-item">
+      <span class="leyenda-color" style="background:#4A7C59"></span>
+      <span>Lunes</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-color" style="background:#8B5E3C"></span>
+      <span>Martes</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-color" style="background:#2D4A35"></span>
+      <span>Miércoles</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-color" style="background:#A8C5A0"></span>
+      <span>Jueves</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-color" style="background:#D4A574"></span>
+      <span>Viernes</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-color" style="background:#6B8F71"></span>
+      <span>Sábado</span>
+    </div>
+  </div>
+
+  <!-- MAPA -->
+  <div id="mapa"></div>
+
+  <!-- TABLA DE RUTAS -->
+  <div class="rutas-tabla">
+    <h3>Resumen de Rutas</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Zona</th>
+          <th>Días de Visita</th>
+          <th>Horario</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-rutas">
+        <!-- Se llena dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+    <!-- CONTÁCTANOS -->
+<section id="contacto">
+  <div class="seccion-encabezado">
+    <h2>Contáctanos</h2>
+    <p class="seccion-subtitulo">Estamos aquí para atenderte, escríbenos lo que necesites</p>
+  </div>
+
+  <!-- TARJETAS DE OPCIONES -->
+  <div class="contacto-opciones">
+
+    <div class="contacto-tarjeta" onclick="mostrarFormulario('pedido')">
+      <span>📦</span>
+      <h3>Hacer un Pedido</h3>
+      <p>Solicita tus productos favoritos</p>
+    </div>
+
+    <div class="contacto-tarjeta" onclick="mostrarFormulario('cotizacion')">
+      <span>💰</span>
+      <h3>Cotización</h3>
+      <p>Pide un presupuesto personalizado</p>
+    </div>
+
+    <div class="contacto-tarjeta" onclick="mostrarFormulario('sugerencia')">
+      <span>💡</span>
+      <h3>Sugerencia</h3>
+      <p>Ayúdanos a mejorar</p>
+    </div>
+
+    <div class="contacto-tarjeta" onclick="mostrarFormulario('queja')">
+      <span>😤</span>
+      <h3>Queja</h3>
+      <p>Cuéntanos si algo salió mal</p>
+    </div>
+
+    <div class="contacto-tarjeta" onclick="mostrarFormulario('comentario')">
+      <span>💬</span>
+      <h3>Comentario</h3>
+      <p>Comparte tu experiencia</p>
+    </div>
+
+  </div>
+
+  <!-- FORMULARIO DINÁMICO -->
+  <div class="contacto-formulario" id="formulario-contacto" style="display:none;">
+
+    <h3 id="formulario-titulo">Formulario</h3>
+
+    <div class="form-grupo">
+      <label>Nombre completo</label>
+      <input type="text" id="campo-nombre" placeholder="Tu nombre">
+    </div>
+
+    <div class="form-grupo">
+      <label>Teléfono o WhatsApp</label>
+      <input type="text" id="campo-telefono" placeholder="Tu número">
+    </div>
+
+    <div class="form-grupo">
+      <label>Correo electrónico (opcional)</label>
+      <input type="email" id="campo-correo" placeholder="Tu correo">
+    </div>
+
+    <div class="form-grupo">
+      <label id="mensaje-label">Mensaje</label>
+      <textarea id="campo-mensaje" rows="5" placeholder="Escribe aquí..."></textarea>
+    </div>
+
+    <div class="form-botones">
+      <button class="boton-enviar" onclick="enviarWhatsApp()">
+        💚 Enviar por WhatsApp
+      </button>
+      <button class="boton-cancelar" onclick="cerrarFormulario()">
+        Cancelar
+      </button>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- BOTÓN FLOTANTE WHATSAPP -->
+<a href="https://wa.me/5213123196416" target="_blank" class="whatsapp-flotante">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+</a>
+
+    <!-- PIE DE PÁGINA -->
+<footer>
+
+  <div class="footer-contenido">
+
+    <!-- COLUMNA 1 — MARCA -->
+    <div class="footer-columna">
+      <h4>🌵 Lechuguillas El Grullense</h4>
+      <p>Sabor artesanal y natural directo del corazón de México. Calidad y tradición en cada producto.</p>
+    </div>
+
+    <!-- COLUMNA 2 — NAVEGACIÓN -->
+    <div class="footer-columna">
+      <h4>Navegación</h4>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="index.html#empresa">Empresa</a></li>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="index.html#cobertura">Áreas de Cobertura</a></li>
+        <li><a href="index.html#contacto">Contáctanos</a></li>
+        <li><a href="blog.html">Blog</a></li>
+      </ul>
+    </div>
+
+    <!-- COLUMNA 3 — LEGAL -->
+    <div class="footer-columna">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="terminos.html">Términos y Condiciones</a></li>
+        <li><a href="politicas.html">Políticas de Privacidad</a></li>
+        <li><a href="politicas.html#cookies">Política de Cookies</a></li>
+      </ul>
+    </div>
+
+    <!-- COLUMNA 4 — REDES -->
+    <div class="footer-columna">
+      <h4>Síguenos</h4>
+      <div class="footer-redes">
+        <a href="https://www.facebook.com/elgrullensecolima/" target="_blank" class="red-social facebook">
+          <span>f</span> Facebook
+        </a>
+        <a href="https://www.instagram.com/elgrullensecol?igsh=emlveHk3djIxa3gz" target="_blank" class="red-social instagram">
+          <span>📸</span> Instagram
+        </a>
+        <a href="https://wa.me/5213123196416" target="_blank" class="red-social whatsapp">
+          <span>💚</span> WhatsApp
+        </a>
+      </div>
+      <div class="footer-ubicacion">
+        <p>📍 <a href="#" target="_blank">Ver ubicación en Maps</a></p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LÍNEA INFERIOR -->
+  <div class="footer-inferior">
+    <p>© 2025 Lechuguillas El Grullense — Todos los derechos reservados</p>
+    <p>Hecho con 🌿 en México</p>
+  </div>
+
+</footer>
+
+  </body>
+
+</html>
