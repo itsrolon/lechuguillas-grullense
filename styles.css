@@ -339,13 +339,26 @@ footer {
 /* ---- HERO CATÁLOGO Y BLOG ---- */
 #catalogo-hero,
 #blog-hero {
-  background-color: #2D4A35;
+  background: linear-gradient(135deg, #4A7C59 0%, #2D4A35 50%, #1a2f20 100%);
   color: #F5F0E8;
   text-align: center;
   padding: 80px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#catalogo-hero::before,
+#blog-hero::before {
+  content: '🌿';
+  position: absolute;
+  font-size: 220px;
+  opacity: 0.05;
+  left: -20px;
+  top: -20px;
+  line-height: 1;
 }
 /* ---- CATÁLOGO ---- */
 .productos-grid {
