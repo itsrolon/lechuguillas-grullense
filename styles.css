@@ -50,29 +50,41 @@ nav a:hover {
 
 /* ---- SECCIÓN INICIO ---- */
 #inicio {
-  background-color: #2D4A35;
-  color: #F5F0E8;
-  text-align: center;
-  padding: 100px 50px;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4A7C59 0%, #2D4A35 50%, #1a2f20 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-#inicio h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 52px;
-  margin-bottom: 16px;
-  letter-spacing: 2px;
+#inicio::before {
+  content: '🌵';
+  position: absolute;
+  font-size: 380px;
+  opacity: 0.06;
+  right: -40px;
+  bottom: -60px;
+  line-height: 1;
 }
 
-#inicio p {
-  font-size: 20px;
-  font-weight: 300;
-  color: #A8C5A0;
-  letter-spacing: 1px;
+#inicio::after {
+  content: '🌿';
+  position: absolute;
+  font-size: 220px;
+  opacity: 0.05;
+  left: -20px;
+  top: -20px;
+  line-height: 1;
 }
 
 /* ---- SECCIONES GENERALES ---- */
 section {
   padding: 80px 60px;
+}
+
+section:not(#inicio) {
   max-width: 1100px;
   margin: 0 auto;
 }
@@ -194,13 +206,6 @@ footer {
   font-size: 12px;
   color: #A8C5A0;
 }
-/* ---- HERO INICIO ---- */
-#inicio {
-  min-height: 90vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .hero-contenido {
   display: flex;
@@ -210,13 +215,15 @@ footer {
 }
 
 .hero-etiqueta {
-  background-color: #4A7C59;
-  color: #F5F0E8;
+  background-color: rgba(168, 197, 160, 0.2);
+  color: #A8C5A0;
   padding: 6px 18px;
   border-radius: 20px;
   font-size: 14px;
   letter-spacing: 1px;
+  border: 1px solid rgba(168, 197, 160, 0.4);
 }
+
 
 .hero-subtitulo {
   font-size: 20px;
@@ -643,4 +650,11 @@ footer {
 .whatsapp-flotante img {
   width: 100%;
   height: 100%;
+}
+#inicio h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 52px;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  color: #F5F0E8;
 }
